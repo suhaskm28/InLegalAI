@@ -63,7 +63,7 @@ if option == "Case Search":
             case_metadata = metadata[idx]
             st.subheader(f"{case_metadata['title']} ({case_metadata['date']})")
             st.write(f"**Court**: {case_metadata.get('court', 'N/A')}")
-            st.write(f"**Sections Mentioned**: {case_metadata.get('sections_mentioned', 'N/A')}")
+            st.write(f"**Sections Mentioned**: {case_metadata.get('sections', 'N/A')}")
             st.write(f"**Citations**: {case_metadata.get('citations', 'N/A')}")
             st.write(f"**Case Summary**: {case_metadata.get('chunks', ['No content available'])[0]}")
             st.write(f"**Similarity Score**: {distances[0][i]}")
