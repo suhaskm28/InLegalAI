@@ -60,15 +60,13 @@ with st.container():
     )
 
 # Sidebar Navigation
-with st.sidebar:
-    st.image("logo.png", use_column_width=True)  # Add your logo file
-    st.markdown("## 📚 Features")
-    feature = st.radio("Navigate", ["Legal QA", "Document Analysis", "Case Analysis", "Complaint Drafting", "Other Legal Tasks"])
-
+st.sidebar.image("logo.png", width=120)  # Add your logo file
+menu_items = ["🏠 Legal QA", "📄 Document Analysis", "⚖️ Case Analysis", "📝 Complaint Drafting", "📚 Indian Legal Tasks"]
+selected = st.sidebar.radio("Select Feature", menu_items, label_visibility="collapsed")
 # -------------------- Feature Logic --------------------
 
 # 1. Legal QA - Home Chat
-if feature == "Legal QA":
+if selected == "Legal QA":
     st.title("💬 Legal Question Answering")
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
@@ -95,7 +93,7 @@ if feature == "Legal QA":
             st.chat_message("assistant").write(msg["content"])
 
 # 2. Document Analysis
-elif feature == "Document Analysis":
+elif selected == "Document Analysis":
     st.title("📄 Document Analysis")
     uploaded = st.file_uploader("Upload a legal document (.txt or .pdf)", type=["txt", "pdf"])
     if uploaded:
@@ -103,7 +101,7 @@ elif feature == "Document Analysis":
         st.info("🔧 Coming soon: Extraction, summarization, section mapping, etc.")
 
 # 3. Case Analysis
-elif feature == "Case Analysis":
+elif selected == "Case Analysis":
     st.title("🔍 Case Analysis")
     case_query = st.text_input("Enter case or context:")
     if case_query:
@@ -114,7 +112,7 @@ elif feature == "Case Analysis":
         st.write(answer)
 
 # 4. Complaint Drafting
-elif feature == "Complaint Drafting":
+elif selected == "Complaint Drafting":
     st.title("📝 Complaint Drafting")
     issue = st.text_area("Describe your issue:")
     if issue:
@@ -124,7 +122,7 @@ elif feature == "Complaint Drafting":
         st.write(draft)
 
 # 5. Other Legal Tasks
-elif feature == "Other Legal Tasks":
+elif selected == "Other Legal Tasks":
     st.title("🛠️ Other Legal Tasks")
     st.info("Add more tools here, like Notice Drafting, Contract Review, Legal Research Tools etc.")
 
