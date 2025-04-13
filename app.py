@@ -56,18 +56,45 @@ st.markdown("""
 
 # ---------- Sidebar ----------
 with st.sidebar:
-    st.image("assets/logo.png", width=140, output_format="auto", caption="LegalAI", use_container_width=False)
+    # Display the logo
+    st.image("assets/logo.png", width=140, caption="LegalAI", use_container_width=True)
+    
+    # Add a title for the features section
     st.markdown("### 🧠 Features")
 
     # Using buttons to simulate navigation
     if st.button("🏠 Legal QA"):
-        st.switch_page("pages/1_Legal_QA.py")
+        st.session_state.current_page = "1_Legal_QA"  # Use session_state to track the page
+        st.experimental_rerun()  # Rerun the app to switch pages
+
     if st.button("📄 Document Analysis"):
-        st.switch_page("pages/2_Document_Analysis.py")
+        st.session_state.current_page = "2_Document_Analysis"
+        st.experimental_rerun()
+
     if st.button("⚖️ Case Analysis"):
-        st.switch_page("pages/3_Case_Analysis.py")
+        st.session_state.current_page = "3_Case_Analysis"
+        st.experimental_rerun()
+
     if st.button("📝 Complaint Drafting"):
-        st.switch_page("pages/4_Complaint_Drafting.py")
+        st.session_state.current_page = "4_Complaint_Drafting"
+        st.experimental_rerun()
+# Add logic in the main app (app.py) to switch between pages based on session_state
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = "1_Legal_QA"  # Default page
+
+# Switch to the selected page based on session_state
+if st.session_state.current_page == "1_Legal_QA":
+    # Render the page content for 1_Legal_QA.py
+    st.write("### Legal QA Page")  # Replace with the actual content
+elif st.session_state.current_page == "2_Document_Analysis":
+    # Render the page content for 2_Document_Analysis.py
+    st.write("### Document Analysis Page")  # Replace with the actual content
+elif st.session_state.current_page == "3_Case_Analysis":
+    # Render the page content for 3_Case_Analysis.py
+    st.write("### Case Analysis Page")  # Replace with the actual content
+elif st.session_state.current_page == "4_Complaint_Drafting":
+    # Render the page content for 4_Complaint_Drafting.py
+    st.write("### Complaint Drafting Page")  # Replace with the actual content
 
 # ---------- Main Content ----------
 st.markdown("<div class='main-title'>Welcome to LegalAI 🇮🇳</div>", unsafe_allow_html=True)
