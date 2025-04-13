@@ -58,16 +58,57 @@ if option == "Case Search":
         # Perform FAISS search
         distances, indices = search_vector(query_embedding)
         
-        # Display results
+        # Collect case metadata for selection
+        case_titles = []
+        case_metadata = {}
         for i, idx in enumerate(indices[0]):
-            case_metadata = metadata[idx]
-            st.subheader(f"{case_metadata['title']} ({case_metadata['date']})")
-            st.write(f"**Court**: {case_metadata.get('court', 'N/A')}")
-            st.write(f"**Sections Mentioned**: {case_metadata.get('sections_mentioned', 'N/A')}")
-            st.write(f"**Citations**: {case_metadata.get('citations', 'N/A')}")
-            st.write(f"**Case Summary**: {case_metadata.get('chunks', ['No content available'])[0]}")
-            st.write(f"**Similarity Score**: {distances[0][i]}")
-            st.markdown("---")
+            case_metadata[idx] = metadata[idx]
+            case_titles.append(f"{metadata[idx]['title']} ({metadata[idx]['date']})")
+        
+        # Allow user to select a case from the search results
+        selected_case_title = st.selectbox("Select a Case for More Details", case_titles)
+        
+        if selected_case_title:
+            selected_case_index = case_titles.index(selected_case_title)
+            selected_case = case_metadata[indices[0][selected_case_index]]
+            
+            # Show selected case details
+            st.subheader(f"Case: {selected_case['title']} ({selected_case['date']})")
+            st.write(f"**Court**: {selected_case.get('court', 'N/A')}")
+            st.write(f"**Sections Mentioned**: {selected_case.get('sections', 'N/A')}")
+            st.write(f"**Citations**: {selected_case.get('citations', 'N/A')}")
+            st.write(f"**Case Summary**: {selected_case.get('chunks', ['No content available'])[0]}")
+            
+            # Allow the user to ask a question related to the selected case
+            case_question = st.text_input(f"Ask a question about '{selected_case['title']}':")
+            
+            if case_question:
+                st.write(f"Getting answer for: **{case_question}**")
+                
+                # Get embedding for the question
+                query_embedding = get_query_embedding(case_question)
+                
+                # Perform FAISS search to retrieve the most relevant chunks for this case
+                distances, indices = search_vector(query_embedding)
+                
+                # Collect relevant context for the selected case
+                retrieved_chunks = []
+                for i, idx in enumerate(indices[0]):
+                    doc = metadata[idx]
+                    chunk = doc.get("chunks", [""])[0]
+                    title = doc.get("title", "")
+                    retrieved_chunks.append(f"{title}: {chunk}")
+                
+                # Build context from retrieved chunks
+                context = "\n".join(retrieved_chunks)
+                
+                # Generate response using Phi-2
+                prompt = f"You are a legal assistant AI. Based on the following legal cases:\n{context}\n\nAnswer the following legal question:\n{case_question}\n\nAnswer:"
+                answer = generate_response(prompt)
+                
+                # Display the answer
+                st.subheader("Answer:")
+                st.write(answer)
 
 elif option == "Legal Question Answering":
     st.header("Ask a Legal Question")
