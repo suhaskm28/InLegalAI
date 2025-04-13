@@ -1,5 +1,5 @@
 import os
-os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"  # ✅ Fix torch.classes bug
+os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
 
 import streamlit as st
 from sentence_transformers import SentenceTransformer
