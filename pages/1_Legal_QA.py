@@ -1,3 +1,6 @@
+import os
+os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"  # ✅ Fix torch.classes bug
+
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForCausalLM
