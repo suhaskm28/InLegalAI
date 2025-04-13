@@ -2,7 +2,7 @@ streamlit
 faiss-cpu
 sentence-transformers
 transformers
-torch
+torch==2.1.0
 scikit-learn
 numpy
 pandas
