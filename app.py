@@ -1,3 +1,7 @@
+import os
+os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"  # ✅ Fix torch.classes bug
+
+
 import streamlit as st
 import faiss
 import json
