@@ -56,7 +56,7 @@ st.markdown("""
 
 # ---------- Sidebar ----------
 with st.sidebar:
-    st.image("assets/logo.png", width=140, output_format="auto", caption="LegalAI", use_column_width=False)
+    st.image("assets/logo.png", width=140, output_format="auto", caption="LegalAI", use_container_width=False)
     st.markdown("### 🧠 Features")
 
     # Using buttons to simulate navigation
