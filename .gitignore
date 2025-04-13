@@ -1,0 +1,39 @@
+# Python related
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Streamlit generated files
+.streamlit/
+
+# Model files
+*.pth
+*.bin
+*.pt
+
+# FAISS index files (don't want to commit these, as they are large)
+vectorstore/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE and editor config files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+
+.devcontainer
+devcontainer.json
