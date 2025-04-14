@@ -53,33 +53,59 @@ if "chat_history" not in st.session_state:
 query = st.chat_input("Ask a legal question...")
 
 if query:
-    st.session_state.chat_history.append({"user": query, "ai": "Answer coming soon..."})  # Replace with actual response
+    st.session_state.chat_history.append({"user": query, "ai": "Generating answer..."})
 
     # Get embedding for the question
     query_embedding = get_query_embedding(query)
 
-    # Perform FAISS search
-    distances, indices = search_vector(query_embedding)
+    # Perform FAISS search (top 3 for optional compression)
+    distances, indices = search_vector(query_embedding, k=3)
 
-    # Collect context from the results
-    retrieved_chunks = []
-    for i, idx in enumerate(indices[0]):
-        doc = metadata[idx]
-        chunk = doc.get("chunks", [""])[0]
-        title = doc.get("title", "")
-        retrieved_chunks.append(f"{title}: {chunk}")
+    # Use only top-1 for direct answer, but gather more if needed
+    doc_indices = indices[0]
+    top_doc = metadata[doc_indices[0]]
+    top_title = top_doc.get("title", "")
+    top_chunks = top_doc.get("chunks", [])
 
-    # Build context
-    context = "\n".join(retrieved_chunks)
+    # Optional: RAG-style compression (combine if short enough)
+    combined_chunk = ""
+    for c in top_chunks[:2]:  # Use top 2 chunks if available
+        if len(combined_chunk) + len(c) < 1200:
+            combined_chunk += c + "\n"
+        else:
+            break
 
-    # Generate response using Phi-2
-    prompt = f"You are a legal assistant AI. Based on the following legal cases:\n{context}\n\nAnswer the following legal question:\n{query}\n\nAnswer:"
+    if not combined_chunk.strip():
+        combined_chunk = top_chunks[0] if top_chunks else ""
+
+    # Build final prompt
+    prompt = f"""You are a helpful and knowledgeable legal assistant AI.
+
+Below is an excerpt from a legal judgment or case document.
+
+Use it to answer the user's question clearly and understandably. Do not copy verbatim unless quoting is necessary. If the text does not contain the answer, politely explain that.
+
+Legal Document (Case: {top_title}):
+{combined_chunk.strip()}
+
+User's Question:
+{query}
+
+Answer:"""
+
+    # Generate answer using Phi-2
     answer = generate_response(prompt)
 
-    # Update chat with answer
+    # Update chat history
     st.session_state.chat_history[-1]["ai"] = answer
+
+    # Show traceability / source
+    st.session_state.chat_history[-1]["source"] = top_title
+
 
 # Display chat history
 for item in st.session_state.chat_history:
     st.chat_message("user").write(item["user"])
     st.chat_message("assistant").write(item["ai"])
+    if "source" in item:
+        st.markdown(f"<div style='font-size: 0.85em; color: gray;'>📄 Source: *{item['source']}*</div>", unsafe_allow_html=True)
